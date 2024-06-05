@@ -58,6 +58,8 @@ body {
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.1s;
+  user-select: none; /* غیرفعال کردن انتخاب تصویر */
+  -webkit-user-drag: none; /* غیرفعال کردن کشیدن تصویر در مرورگرهای وب‌کیت */
 }
 
 .golden-image.special-message {
