@@ -90,12 +90,3 @@ function loadScore() {
 // به‌روزرسانی رنگ پس‌زمینه و متن لیگ هنگام بارگذاری صفحه
 updateRankText(score);
 updateEnergyBar();
-
-// جلوگیری از انتخاب و کشیدن تصویر
-goldenImage.addEventListener('mousedown', function(event) {
-    event.preventDefault();
-});
-
-goldenImage.addEventListener('touchstart', function(event) {
-    event.preventDefault();
-});
