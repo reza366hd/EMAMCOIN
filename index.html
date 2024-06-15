@@ -1,44 +1,196 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notcoin</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Morabba';
+            src: url('Morabba-Bold.woff') format('woff');
+            font-weight: bold;
+        }
+        body {
+            font-family: 'Morabba', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="score">
-            <span class="coin-icon">🕋</span>
+<body class="flex justify-center items-center h-screen bg-gradient-to-b from-black to-gray-800 text-white transition-colors duration-500">
+    <div class="container text-center flex flex-col items-center w-11/12 max-w-lg">
+        <div class="score text-2xl flex items-center justify-center mb-1">
+            <span class="coin-icon text-xl mr-2">🕋</span>
             <span id="score">0</span>
         </div>
-        <div class="rank">
+        <div class="rank my-1 mb-5">
             <span id="rank-text">لیگ برنز</span>
         </div>
-        <div class="button-container">
-            <img id="golden-image" class="golden-image" src="emam.png" alt="امام" onclick="handleClick()">
+        <div class="button-container flex justify-center items-center flex-grow w-full relative my-5">
+            <img id="golden-image" class="golden-image w-36 h-36 rounded-full cursor-pointer transition-transform duration-100" src="emam.png" alt="امام" onclick="handleClick()">
         </div>
-        <div class="energy-container">
-            <div class="energy">
-                <span class="lightning">📿</span>
+        <div class="energy-container flex items-center w-full my-5">
+            <div class="energy flex items-center mr-2">
+                <span class="lightning mr-1">📿</span>
                 <span id="energy">150</span>
                 <span>/150</span>
             </div>
-            <div class="energy-bar-container">
-                <div id="energy-bar" class="energy-bar"></div>
+            <div class="energy-bar-container flex-grow h-5 bg-white bg-opacity-20 rounded-full">
+                <div id="energy-bar" class="energy-bar h-full bg-green-500 rounded-full transition-all duration-500"></div>
             </div>
         </div>
-        <div class="footer">
-            <div class="menu">
-                <span class="blurred">🧸 یاران حق</span>
-                <span class="blurred">🪙 واجبات</span>
-                <span class="blurred">🚀 مستحبات</span>
-                <span class="soon">به زودی...</span>
+        <div class="footer flex flex-col items-center w-full">
+            <div class="menu flex justify-around bg-white bg-opacity-10 p-5 rounded-lg w-full box-border relative backdrop-blur-md">
+                <span>🧸 یاران حق</span>
+                <span>🪙 واجبات</span>
+                <span id="mostahabat-link" class="cursor-pointer">🚀 مستحبات</span>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        let score = loadScore();
+        let energy = 150;
+        const maxEnergy = 150;
+        const scoreElement = document.getElementById('score');
+        const goldenImage = document.getElementById('golden-image');
+        const rankText = document.getElementById('rank-text');
+        const energyElement = document.getElementById('energy');
+        const energyBar = document.getElementById('energy-bar');
+        const bodyElement = document.body;
+
+        // بارگذاری لول چند ضربه‌ای
+        let multiHitLevel = parseInt(localStorage.getItem('multiHitLevel')) || 1;
+
+        scoreElement.textContent = score;
+
+        function handleClick() {
+            if (energy > 0) {
+                let increment = 1;
+                if (localStorage.getItem('boost') === 'turbo-active') {
+                    increment = 5;
+                }
+                increment *= multiHitLevel; // افزایش امتیاز بر اساس لول چند ضربه‌ای
+                score += increment;
+                energy -= multiHitLevel; // کاهش انرژی بر اساس لول چند ضربه‌ای
+                scoreElement.textContent = score;
+                energyElement.textContent = energy;
+                updateEnergyBar();
+                updateRankText(score);
+                saveScore(score);
+                goldenImage.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    goldenImage.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+
+        function updateRankText(score) {
+            if (score < 1000) {
+                rankText.innerHTML = 'لیگ برنزی 🥉'; // اضافه کردن ایموجی برنز
+                bodyElement.style.background = 'linear-gradient(180deg, #000000, #cd7f32)';
+                energyBar.style.backgroundColor = '#cd7f32'; /* رنگ نوار شارژ برای لیگ برنزی */
+            } else if (score < 2000) {
+                rankText.innerHTML = 'لیگ نقره‌ای 🥈'; // اضافه کردن ایموجی نقره
+                bodyElement.style.background = 'linear-gradient(180deg, #000000, #c0c0c0)';
+                energyBar.style.backgroundColor = '#c0c0c0'; /* رنگ نوار شارژ برای لیگ نقره‌ای */
+            } else if (score < 3000) {
+                rankText.innerHTML = 'لیگ طلایی 🥇'; // اضافه کردن ایموجی طلا
+                bodyElement.style.background = 'linear-gradient(180deg, #000000, #f9a602)';
+                energyBar.style.backgroundColor = '#f9a602'; /* رنگ نوار شارژ برای لیگ طلایی */
+            } else {
+                rankText.innerHTML = 'لیگ الماس 💎'; // اضافه کردن ایموجی الماس
+                bodyElement.style.background = 'linear-gradient(180deg, #000000, #b9f2ff)';
+                energyBar.style.backgroundColor = '#b9f2ff'; /* رنگ نوار شارژ برای لیگ الماس */
+            }
+        }
+
+        function updateEnergyBar() {
+            const energyPercentage = (energy / maxEnergy) * 100;
+            energyBar.style.width = energyPercentage + '%';
+        }
+
+        // شارژ انرژی هر دو ثانیه یک واحد تا رسیدن به 150
+        setInterval(() => {
+            if (energy < maxEnergy) {
+                energy++;
+                energyElement.textContent = energy;
+                updateEnergyBar();
+            }
+        }, 2000);
+
+        // نمایش پیام خاص وقتی انرژی به 0 رسید
+        function showSpecialMessage() {
+            goldenImage.textContent = "صلوات شما به حد نصاب رسید";
+            goldenImage.classList.add('special-message');
+            setTimeout(() => {
+                goldenImage.textContent = "امام";
+                goldenImage.classList.remove('special-message');
+            }, 3000);
+        }
+
+        // نظارت بر انرژی و نمایش پیام خاص
+        setInterval(() => {
+            if (energy === 0) {
+                showSpecialMessage();
+            }
+        }, 1000);
+
+        // ذخیره‌سازی امتیاز
+        function saveScore(score) {
+            localStorage.setItem('userScore', score);
+        }
+
+        // بازیابی امتیاز
+        function loadScore() {
+            return parseInt(localStorage.getItem('userScore')) || 0;
+        }
+
+        // به‌روزرسانی رنگ پس‌زمینه و متن لیگ هنگام بارگذاری صفحه
+        updateRankText(score);
+        updateEnergyBar();
+
+        // هدایت به صفحه mos.html هنگام کلیک بر روی مستحبات
+        document.getElementById('mostahabat-link').addEventListener('click', () => {
+            window.location.href = 'mos.html';
+        });
+
+        // بررسی بوسترها
+        function checkBoosters() {
+            const boost = localStorage.getItem('boost');
+            if (boost === 'full-energy') {
+                energy = maxEnergy;
+                localStorage.removeItem('boost');
+                updateEnergyBar();
+                energyElement.textContent = energy;
+            } else if (boost === 'turbo') {
+                // افزایش ماین کردن به 5 برای 10 ثانیه
+                localStorage.setItem('boost', 'turbo-active');
+                setTimeout(() => {
+                    localStorage.removeItem('boost');
+                }, 10000);
+            }
+        }
+
+        // بررسی بوسترها در هر بار بارگذاری صفحه
+        checkBoosters();
+
+        // محاسبه سکه‌های اضافی بر اساس زمان گذشته
+        function calculateAdditionalCoins() {
+            const lastVisit = parseInt(localStorage.getItem('lastVisit')) || new Date().getTime();
+            const now = new Date().getTime();
+            const hoursPassed = Math.floor((now - lastVisit) / (1000 * 60 * 60));
+            const additionalCoins = hoursPassed * 1000;
+            const balance = parseInt(localStorage.getItem('userScore')) || 0;
+
+            if (localStorage.getItem('divineQueenActive')) {
+                localStorage.setItem('userScore', balance + additionalCoins);
+                alert(`شما ${additionalCoins} سکه اضافی دریافت کردید!`);
+            }
+
+            localStorage.setItem('lastVisit', now);
+        }
+
+        // فراخوانی تابع محاسبه سکه‌های اضافی هنگام بارگذاری صفحه
+        calculateAdditionalCoins();
+    </script>
 </body>
 </html>
