@@ -26,7 +26,7 @@
             <span id="rank-text">لیگ برنز</span>
         </div>
         <div class="button-container flex justify-center items-center flex-grow w-full relative my-5">
-            <img id="golden-image" class="golden-image w-36 h-36 rounded-full cursor-pointer transition-transform duration-100" src="emam.png" alt="امام" onclick="handleClick()">
+            <img id="golden-image" class="golden-image w-41 rounded-full cursor-pointer transition-transform duration-70" src="emam.png" alt="امام" onclick="handleClick()">
         </div>
         <div class="energy-container flex items-center w-full my-5">
             <div class="energy flex items-center mr-2">
@@ -181,7 +181,7 @@
             const additionalCoins = hoursPassed * 1000;
             const balance = parseInt(localStorage.getItem('userScore')) || 0;
 
-            if (localStorage.getItem('divineQueenActive')) {
+            if (localStorage.getItem('divineQueenActive') && additionalCoins > 1) {
                 localStorage.setItem('userScore', balance + additionalCoins);
                 alert(`شما ${additionalCoins} سکه اضافی دریافت کردید!`);
             }
