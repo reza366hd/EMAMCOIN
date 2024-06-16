@@ -2,23 +2,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = loadScore();
     let energy = loadEnergy();
     let maxEnergy = loadMaxEnergy();
+    let refillSpeedLevel = loadRefillSpeedLevel();
     const scoreElement = document.getElementById('score');
     const goldenImage = document.getElementById('golden-image');
     const rankText = document.getElementById('rank-text');
     const energyElement = document.getElementById('energy');
+    const maxEnergyElement = document.getElementById('max-energy');
     const energyBar = document.getElementById('energy-bar');
     const bodyElement = document.body;
 
     scoreElement.textContent = score;
     energyElement.textContent = energy;
+    maxEnergyElement.textContent = `/${maxEnergy}`;
     updateEnergyBar();
 
     goldenImage.addEventListener('click', handleClick);
 
     function handleClick() {
-        if (energy > 0) {
-            score++;
-            energy--;
+        let multiHitLevel = parseInt(localStorage.getItem('multiHitLevel')) || 1;
+        if (energy >= multiHitLevel) {
+            let increment = 1;
+            if (localStorage.getItem('boost') === 'turbo-active') {
+                increment = 5;
+            }
+            increment *= multiHitLevel;
+
+            score += increment;
+            if (localStorage.getItem('boost') !== 'turbo-active') {
+                energy -= multiHitLevel;
+            }
             scoreElement.textContent = score;
             energyElement.textContent = energy;
             updateEnergyBar();
@@ -37,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
             rankText.innerHTML = 'لیگ برنزی 🥉'; // اضافه کردن ایموجی برنز
             bodyElement.style.background = 'linear-gradient(180deg, #000000, #cd7f32)';
             energyBar.style.backgroundColor = '#cd7f32'; /* رنگ نوار شارژ برای لیگ برنزی */
-        } else if (score < 2000) {
+        } else if (score < 5000) {
             rankText.innerHTML = 'لیگ نقره‌ای 🥈'; // اضافه کردن ایموجی نقره
             bodyElement.style.background = 'linear-gradient(180deg, #000000, #c0c0c0)';
             energyBar.style.backgroundColor = '#c0c0c0'; /* رنگ نوار شارژ برای لیگ نقره‌ای */
-        } else if (score < 3000) {
+        } else if (score < 20000) {
             rankText.innerHTML = 'لیگ طلایی 🥇'; // اضافه کردن ایموجی طلا
             bodyElement.style.background = 'linear-gradient(180deg, #000000, #f9a602)';
             energyBar.style.backgroundColor = '#f9a602'; /* رنگ نوار شارژ برای لیگ طلایی */
@@ -57,15 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
         energyBar.style.width = energyPercentage + '%';
     }
 
-    // شارژ انرژی هر دو ثانیه یک واحد تا رسیدن به maxEnergy
+    // شارژ انرژی بر اساس سرعت پرشدن تسبیح
     setInterval(() => {
         if (energy < maxEnergy) {
-            energy++;
+            energy += refillSpeedLevel;
+            if (energy > maxEnergy) {
+                energy = maxEnergy;
+            }
             energyElement.textContent = energy;
             updateEnergyBar();
             saveEnergy(energy);
         }
-    }, 2000);
+    }, 1000);
 
     // نمایش پیام خاص وقتی انرژی به 0 رسید
     function showSpecialMessage() {
@@ -114,6 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseInt(localStorage.getItem('maxEnergy')) || 150;
     }
 
+    // ذخیره‌سازی لول سرعت پرشدن تسبیح
+    function saveRefillSpeedLevel(level) {
+        localStorage.setItem('increaseRefillSpeedLevel', level);
+    }
+
+    // بازیابی لول سرعت پرشدن تسبیح
+    function loadRefillSpeedLevel() {
+        return parseInt(localStorage.getItem('increaseRefillSpeedLevel')) || 1;
+    }
+
     // به‌روزرسانی رنگ پس‌زمینه و متن لیگ هنگام بارگذاری صفحه
     updateRankText(score);
     updateEnergyBar();
@@ -134,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveEnergy(energy);
         } else if (boost === 'turbo') {
             // افزایش ماین کردن به 5 برای 10 ثانیه
+            let multiHitLevel = parseInt(localStorage.getItem('multiHitLevel')) || 1;
             localStorage.setItem('boost', 'turbo-active');
             goldenImage.classList.add('turbo-boost');
             setTimeout(() => {
