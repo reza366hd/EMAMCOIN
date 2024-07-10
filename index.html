@@ -13,13 +13,57 @@
         }
         body {
             font-family: 'Morabba', sans-serif;
-                    * {
-  -webkit-tap-highlight-color: transparent;
-                    }
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+        .ribbon {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .ribbon::before, .ribbon::after {
+            position: absolute;
+            z-index: -1;
+            content: '';
+            display: block;
+            border: 5px solid #000;
+        }
+        .ribbon::before {
+            top: 0;
+            left: 0;
+            border-top-color: transparent;
+            border-right-color: transparent;
+        }
+        .ribbon::after {
+            bottom: 0;
+            right: 0;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+        }
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 225px;
+            padding: 15px 0;
+            background-color: #000;
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            font-weight: bold;
+            right: -25px;
+            top: 30px;
+            transform: rotate(45deg);
         }
     </style>
 </head>
-<body class="flex justify-center items-center h-screen bg-gradient-to-b from-black to-gray-800 text-white transition-colors duration-500">
+<body class="flex justify-center items-center h-screen bg-gradient-to-b from-black to-gray-900 text-white transition-colors duration-500">
+    <div class="ribbon">
+        <span>یا حسین</span>
+    </div>
     <div class="container text-center flex flex-col items-center w-11/12 max-w-lg">
         <div class="score text-2xl flex items-center justify-center mb-1">
             <span class="coin-icon text-xl mr-2">🕋</span>
@@ -43,8 +87,8 @@
         </div>
         <div class="footer flex flex-col items-center w-full">
             <div class="menu flex justify-around bg-white bg-opacity-10 p-5 rounded-lg w-full box-border relative backdrop-blur-md">
-                <span>🧸 یاران حق</span>
-                <span>🪙 واجبات</span>
+                <!-- <span>🧸 یاران حق</span> -->
+                <span id="task-link" class="cursor-pointer">🪙 واجبات</span>
                 <span id="mostahabat-link" class="cursor-pointer">🚀 مستحبات</span>
             </div>
         </div>
