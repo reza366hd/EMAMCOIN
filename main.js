@@ -148,6 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'mos.html';
     });
 
+    document.getElementById('task-link').addEventListener('click', () => {
+        window.location.href = 'task.html';
+    });
+
     // بررسی بوسترها
     function checkBoosters() {
         const boost = localStorage.getItem('boost');
